@@ -5,6 +5,7 @@ CXX &mdash; safe FFI between Rust and C++
 [<img alt="crates.io" src="https://img.shields.io/crates/v/cxx.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/cxx)
 [<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-cxx-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs" height="20">](https://docs.rs/cxx)
 [<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/dtolnay/cxx/ci.yml?branch=master&style=for-the-badge" height="20">](https://github.com/dtolnay/cxx/actions?query=branch%3Amaster)
+[<img alt="Gurubase" src="https://img.shields.io/badge/Gurubase-Ask%20CXX%20Guru-006BFF?style=for-the-badge" height="20">](https://gurubase.io/g/cxx)
 
 This library provides a **safe** mechanism for calling C++ code from Rust and
 Rust code from C++, not subject to the many ways that things can go wrong when
@@ -283,29 +284,29 @@ are used to.
 
 Some of the considerations that go into ensuring safety are:
 
-- By design, our paired code generators work together to control both sides of
-  the FFI boundary. Ordinarily in Rust writing your own `extern "C"` blocks is
-  unsafe because the Rust compiler has no way to know whether the signatures
-  you've written actually match the signatures implemented in the other
-  language. With CXX we achieve that visibility and know what's on the other
+the FFI boundary. Ordinarily in Rust writing your own `extern "C"` blocks is
+unsafe because the Rust compiler has no way to know whether the signatures
+you've written actually match the signatures implemented in the other
+language. With CXX we achieve that visibility and know what's on the other
+side.
   side.
 
 - Our static analysis detects and prevents passing types by value that shouldn't
   be passed by value from C++ to Rust, for example because they may contain
   internal pointers that would be screwed up by Rust's move behavior.
 
-- To many people's surprise, it is possible to have a struct in Rust and a
-  struct in C++ with exactly the same layout / fields / alignment / everything,
-  and still not the same ABI when passed by value. This is a longstanding
-  bindgen bug that leads to segfaults in absolutely correct-looking code
-  ([rust-lang/rust-bindgen#778]). CXX knows about this and can insert the
-  necessary zero-cost workaround transparently where needed, so go ahead and
-  pass your structs by value without worries. This is made possible by owning
-  both sides of the boundary rather than just one.
+struct in C++ with exactly the same layout / fields / alignment / everything,
+and still not the same ABI when passed by value. This is a longstanding
+bindgen bug that leads to segfaults in absolutely correct-looking code
+([rust-lang/rust-bindgen#778]). CXX knows about this and can insert the
+necessary zero-cost workaround transparently where needed, so go ahead and
+pass your structs by value without worries. This is made possible by owning
+both sides of the boundary rather than just one.
 
-- Template instantiations: for example in order to expose a UniquePtr\<T\> type
-  in Rust backed by a real C++ unique\_ptr, we have a way of using a Rust trait
-  to connect the behavior back to the template instantiations performed by the
+- Template instantiations: for example in order to expose a UniquePtr<T> type
+in Rust backed by a real C++ unique_ptr, we have a way of using a Rust trait
+to connect the behavior back to the template instantiations performed by the
+other language.
   other language.
 
 [rust-lang/rust-bindgen#778]: https://github.com/rust-lang/rust-bindgen/issues/778
